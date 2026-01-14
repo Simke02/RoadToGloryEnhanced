@@ -1,0 +1,57 @@
+<div class="header">
+  <div class="resource">
+    <p>Gold: {{ gold }}</p>
+  </div>
+  <div class="resource">
+    <p>Iron: {{ available_resources.iron }}</p>
+  </div>
+  <div class="resource">
+    <p>Grain: {{ available_resources.grain }}</p>
+  </div>
+</div>
+
+<div class="matrix">
+    <div *ngFor="let row of terrain; let rowIndex = index" class="row">
+      <div
+        *ngFor="let cell of row; let colIndex = index"
+        class="cell"
+        (click)="onCellLeftClick(rowIndex, colIndex)"
+        (contextmenu)="onCellRightClick(rowIndex, colIndex, $event)"
+        [ngStyle]="{ 'background-color': getColor(cell) }"
+      >
+      </div>
+    </div>
+</div>
+
+<div *ngIf="selected_menu" class="menu-container">
+  <app-selected-menu [health]="health"
+    (closeMenu)="closeSelectedMenu()">
+  </app-selected-menu>
+</div>
+
+<div *ngIf="buildings_menu" class="menu-container">
+  <app-buildings-menu [buildings]="buildings"
+    (closeMenu)="closeBuildingsMenu()" (optionSelected)="handleBuildingsMenu($event)">
+  </app-buildings-menu>
+</div>
+
+<div *ngIf="production_menu" class="menu-container">
+  <app-production-menu [facility]="selected_facility" [available_resources]="available_resources"
+  (closeMenu)="closeProductionMenu()" (optionSelected)="handleProductionMenu($event)">></app-production-menu>
+</div>
+
+<div *ngIf="upgrades_menu" class="menu-container">
+  <app-upgrades-menu [upgrades]="upgrades" [gold]="gold"
+  (closeMenu)="closeUpgradesMenu()" (optionSelected)="handleUpgradesMenu($event)"></app-upgrades-menu>
+</div>
+
+<div *ngIf="add_upgrades_menu" class="menu-container">
+  <app-add-upgrade-menu [upgrades]="player_upgrades" [gold]="gold"
+  (closeMenu)="closeAddUpgradesMenu()" (optionSelected)="handleAddUpgradesMenu($event)"></app-add-upgrade-menu>
+</div>
+
+<button class="bottom-right-button" (click)="onNextTurnClick()">Next turn</button>
+
+<button class="bottom-left-button" (click)="onSurrenderClick()">Surrender</button>
+
+<div *ngIf="!my_turn" class="screen-overlay"></div>

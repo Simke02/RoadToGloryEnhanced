@@ -1,0 +1,91 @@
+.matrix {
+    display: flex;
+    flex-direction: column; 
+    height: calc(100vh - 135px);/*100vh;*/
+    width: calc(100vw - 15px);/*100vw;*/
+    margin-bottom: 10px; /* Adds space at the bottom */
+  }
+
+  .row {
+    display: flex; 
+    flex: 1; 
+  }
+  
+  .cell {
+    flex: 1; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #333;
+  }
+  .icon {
+    width: 24px;
+    height: 24px;
+    background-color: transparent;
+    position: absolute;
+  }
+
+  .bottom-right-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease;
+  }
+  
+  .bottom-right-button:hover {
+    background-color: #0056b3;
+  }
+
+  .screen-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.3); /* Optional semi-transparent background */
+    z-index: 1000; /* Ensure it's on top of other elements */
+    pointer-events: all; /* Captures all pointer events */
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between; /* Distribute space evenly between items */
+    padding: 2px;
+    background-color: #f0f0f0; /* Optional background color */
+    border-bottom: 1px solid #ccc; /* Optional border to separate the header */
+}
+
+.resource {
+    flex: 1; /* Make all resource divs the same width */
+    text-align: center; /* Center the text */
+    font-weight: bold;
+}
+
+.resource p {
+    margin: 0; /* Remove default margin from paragraphs */
+}
+
+.bottom-left-button {
+  position: fixed;
+  bottom: 20px;
+  left: 20px; /* Changed from right to left */
+  padding: 10px 20px;
+  background-color: red;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+}
+
+.bottom-left-button:hover {
+  background-color: darkred;
+}
