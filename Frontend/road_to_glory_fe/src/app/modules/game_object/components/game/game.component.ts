@@ -25,8 +25,8 @@ import { PersistenceService } from '../../services/persistence.service';
   styleUrls: ['./game.component.css']
 })
 export class GameComponent implements OnInit, OnDestroy {
-  private player: string="";
-  private room:string="0";
+  public player: string="";
+  public room:string="0";
   private left: boolean = true;
   terrain: string[][] = [];
   private player_units: Unit[] = [];
@@ -344,6 +344,21 @@ export class GameComponent implements OnInit, OnDestroy {
         return '#A9D08E';
       default:
         return '#9E9E9E';
+    }
+  }
+
+  getTerrainClass(value: string): string {
+    switch (value) {
+      case 'lake':
+        return 'water';
+      case 'forest':
+        return 'forest';
+      case 'hills':
+        return 'mountain';
+      case 'plains':
+        return 'grass';
+      default:
+        return 'grass';
     }
   }
 

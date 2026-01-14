@@ -1,57 +1,196 @@
-<div class="header">
-  <div class="resource">
-    <p>Gold: {{ gold }}</p>
+<div class="game-container">
+  <!-- Top Resource Bar -->
+  <div class="resource-bar">
+    <div class="resource-item gold">
+      <span class="resource-icon">💰</span>
+      <span class="resource-value">{{ gold }}</span>
+      <span class="resource-label">Gold</span>
+    </div>
+    <div class="resource-item iron">
+      <span class="resource-icon">⚔️</span>
+      <span class="resource-value">{{ available_resources.iron }}</span>
+      <span class="resource-label">Iron</span>
+    </div>
+    <div class="resource-item grain">
+      <span class="resource-icon">🌾</span>
+      <span class="resource-value">{{ available_resources.grain }}</span>
+      <span class="resource-label">Grain</span>
+    </div>
+    <div class="turn-indicator" [class.my-turn]="my_turn">
+      <span class="turn-icon">{{ my_turn ? '⚔️' : '⏳' }}</span>
+      <span class="turn-text">{{ my_turn ? 'Your Turn' : 'Enemy Turn' }}</span>
+    </div>
   </div>
-  <div class="resource">
-    <p>Iron: {{ available_resources.iron }}</p>
-  </div>
-  <div class="resource">
-    <p>Grain: {{ available_resources.grain }}</p>
-  </div>
-</div>
 
-<div class="matrix">
-    <div *ngFor="let row of terrain; let rowIndex = index" class="row">
-      <div
-        *ngFor="let cell of row; let colIndex = index"
-        class="cell"
-        (click)="onCellLeftClick(rowIndex, colIndex)"
-        (contextmenu)="onCellRightClick(rowIndex, colIndex, $event)"
-        [ngStyle]="{ 'background-color': getColor(cell) }"
-      >
+  <!-- Main Game Area -->
+  <div class="game-area">
+    <!-- Left Sidebar - Game Info -->
+    <div class="sidebar left-sidebar">
+      <div class="sidebar-section">
+        <h3 class="sidebar-title">Game Info</h3>
+        <div class="info-item">
+          <span class="info-label">Room:</span>
+          <span class="info-value">{{ room }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Player:</span>
+          <span class="info-value">{{ player }}</span>
+        </div>
+      </div>
+      
+      <div class="sidebar-section">
+        <h3 class="sidebar-title">Legend</h3>
+        <div class="legend-item">
+          <div class="legend-color" style="background-color: #4CAF50;"></div>
+          <span class="legend-text">Grass</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background-color: #8B4513;"></div>
+          <span class="legend-text">Mountain</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background-color: #4682B4;"></div>
+          <span class="legend-text">Water</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background-color: #2E7D32;"></div>
+          <span class="legend-text">Forest</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background-color: #FFD700;"></div>
+          <span class="legend-text">City</span>
+        </div>
       </div>
     </div>
+
+    <!-- Game Board -->
+    <div class="board-container">
+      <div class="game-board">
+        <div *ngFor="let row of terrain; let rowIndex = index" class="board-row">
+          <div
+            *ngFor="let cell of row; let colIndex = index"
+            class="board-cell"
+            [ngClass]="getTerrainClass(cell)"
+            (click)="onCellLeftClick(rowIndex, colIndex)"
+            (contextmenu)="onCellRightClick(rowIndex, colIndex, $event)"
+          >
+            <div class="cell-content">
+              <!-- Icons will be dynamically added here -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Sidebar - Actions -->
+    <div class="sidebar right-sidebar">
+      <div class="sidebar-section">
+        <h3 class="sidebar-title">Actions</h3>
+        <p class="sidebar-hint">Click tiles to select units or buildings</p>
+        <p class="sidebar-hint">Right-click for context menu</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Action Bar -->
+  <div class="action-bar">
+    <button class="action-button surrender-button" (click)="onSurrenderClick()">
+      <span class="button-icon">🏳️</span>
+      <span class="button-text">Surrender</span>
+    </button>
+    
+    <div class="action-center">
+      <span class="game-title">Road to Glory Enhanced</span>
+    </div>
+    
+    <button class="action-button next-turn-button" [disabled]="!my_turn" (click)="onNextTurnClick()">
+      <span class="button-icon">⏭️</span>
+      <span class="button-text">Next Turn</span>
+    </button>
+  </div>
 </div>
 
-<div *ngIf="selected_menu" class="menu-container">
-  <app-selected-menu [health]="health"
-    (closeMenu)="closeSelectedMenu()">
-  </app-selected-menu>
+<!-- Menu Overlays -->
+<div *ngIf="selected_menu" class="menu-overlay" (click)="closeSelectedMenu()">
+  <div class="menu-modal" (click)="$event.stopPropagation()">
+    <div class="menu-header">
+      <h2 class="menu-title">Unit/Building Info</h2>
+      <button class="close-button" (click)="closeSelectedMenu()">✕</button>
+    </div>
+    <div class="menu-content">
+      <app-selected-menu [health]="health" (closeMenu)="closeSelectedMenu()"></app-selected-menu>
+    </div>
+  </div>
 </div>
 
-<div *ngIf="buildings_menu" class="menu-container">
-  <app-buildings-menu [buildings]="buildings"
-    (closeMenu)="closeBuildingsMenu()" (optionSelected)="handleBuildingsMenu($event)">
-  </app-buildings-menu>
+<div *ngIf="buildings_menu" class="menu-overlay" (click)="closeBuildingsMenu()">
+  <div class="menu-modal" (click)="$event.stopPropagation()">
+    <div class="menu-header">
+      <h2 class="menu-title">Build Structure</h2>
+      <button class="close-button" (click)="closeBuildingsMenu()">✕</button>
+    </div>
+    <div class="menu-content">
+      <app-buildings-menu [buildings]="buildings" 
+        (closeMenu)="closeBuildingsMenu()" 
+        (optionSelected)="handleBuildingsMenu($event)">
+      </app-buildings-menu>
+    </div>
+  </div>
 </div>
 
-<div *ngIf="production_menu" class="menu-container">
-  <app-production-menu [facility]="selected_facility" [available_resources]="available_resources"
-  (closeMenu)="closeProductionMenu()" (optionSelected)="handleProductionMenu($event)">></app-production-menu>
+<div *ngIf="production_menu" class="menu-overlay" (click)="closeProductionMenu()">
+  <div class="menu-modal" (click)="$event.stopPropagation()">
+    <div class="menu-header">
+      <h2 class="menu-title">Produce Units</h2>
+      <button class="close-button" (click)="closeProductionMenu()">✕</button>
+    </div>
+    <div class="menu-content">
+      <app-production-menu [facility]="selected_facility" 
+        [available_resources]="available_resources"
+        (closeMenu)="closeProductionMenu()" 
+        (optionSelected)="handleProductionMenu($event)">
+      </app-production-menu>
+    </div>
+  </div>
 </div>
 
-<div *ngIf="upgrades_menu" class="menu-container">
-  <app-upgrades-menu [upgrades]="upgrades" [gold]="gold"
-  (closeMenu)="closeUpgradesMenu()" (optionSelected)="handleUpgradesMenu($event)"></app-upgrades-menu>
+<div *ngIf="upgrades_menu" class="menu-overlay" (click)="closeUpgradesMenu()">
+  <div class="menu-modal" (click)="$event.stopPropagation()">
+    <div class="menu-header">
+      <h2 class="menu-title">Research Upgrades</h2>
+      <button class="close-button" (click)="closeUpgradesMenu()">✕</button>
+    </div>
+    <div class="menu-content">
+      <app-upgrades-menu [upgrades]="upgrades" 
+        [gold]="gold"
+        (closeMenu)="closeUpgradesMenu()" 
+        (optionSelected)="handleUpgradesMenu($event)">
+      </app-upgrades-menu>
+    </div>
+  </div>
 </div>
 
-<div *ngIf="add_upgrades_menu" class="menu-container">
-  <app-add-upgrade-menu [upgrades]="player_upgrades" [gold]="gold"
-  (closeMenu)="closeAddUpgradesMenu()" (optionSelected)="handleAddUpgradesMenu($event)"></app-add-upgrade-menu>
+<div *ngIf="add_upgrades_menu" class="menu-overlay" (click)="closeAddUpgradesMenu()">
+  <div class="menu-modal" (click)="$event.stopPropagation()">
+    <div class="menu-header">
+      <h2 class="menu-title">Upgrade Unit</h2>
+      <button class="close-button" (click)="closeAddUpgradesMenu()">✕</button>
+    </div>
+    <div class="menu-content">
+      <app-add-upgrade-menu [upgrades]="player_upgrades" 
+        [gold]="gold"
+        (closeMenu)="closeAddUpgradesMenu()" 
+        (optionSelected)="handleAddUpgradesMenu($event)">
+      </app-add-upgrade-menu>
+    </div>
+  </div>
 </div>
 
-<button class="bottom-right-button" (click)="onNextTurnClick()">Next turn</button>
-
-<button class="bottom-left-button" (click)="onSurrenderClick()">Surrender</button>
-
-<div *ngIf="!my_turn" class="screen-overlay"></div>
+<!-- Turn Waiting Overlay -->
+<div *ngIf="!my_turn" class="turn-waiting-overlay">
+  <div class="waiting-message">
+    <div class="spinner"></div>
+    <h2>Waiting for opponent...</h2>
+    <p>The other player is making their move</p>
+  </div>
+</div>
