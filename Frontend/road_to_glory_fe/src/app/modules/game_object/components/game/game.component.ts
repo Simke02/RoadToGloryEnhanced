@@ -739,7 +739,7 @@ export class GameComponent implements OnInit, OnDestroy {
     const cell = this.el.nativeElement.querySelector(`.row:nth-child(${row + 1}) .cell:nth-child(${col + 1})`);
     if (cell) {
       const iconElement = this.renderer.createElement('img');
-      this.renderer.setAttribute(iconElement, 'src', `assets/icons/${iconType}-icon.png`);
+      this.renderer.setAttribute(iconElement, 'src', '/assets/icons/' + iconType + '-icon.png');
       this.renderer.addClass(iconElement, 'icon');
 
       //Ako je levi igrac facing ce biti true
