@@ -1,7 +1,7 @@
 import { AutoMap } from "@automapper/classes";
 import { MinLength, ValidateNested } from "class-validator";
 
-export class UserCreateDto{
+export class UserCreateDto {
     @AutoMap()
     @MinLength(6)
     username: string;
@@ -12,9 +12,9 @@ export class UserCreateDto{
 
 
     @AutoMap()
-    firstName: string;
-    
+    firstName?: string;
+
     @AutoMap()
-    lastName: string;
-    
+    lastName?: string;
+
 }

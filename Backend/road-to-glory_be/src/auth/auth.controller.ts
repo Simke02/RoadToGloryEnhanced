@@ -22,16 +22,20 @@ export class AuthController {
     private readonly userService: UserService,
     private jwtService: JwtService,
     @InjectMapper() private readonly classMapper: Mapper,
-  ) {}
-  
+  ) { }
+
   @Post("")
   @UseFilters(new UserAlreadyExistsExceptionFilter())
   async registerUser(
     @Body() userCreateDto: UserCreateDto,
     @Res() res: Response,
-  ){
+  ) {
     const user = this.classMapper.map(userCreateDto, UserCreateDto, User);
-    
+
+    // Provide default values for optional fields
+    user.firstName = user.firstName || user.username;
+    user.lastName = user.lastName || '';
+
     console.log(user);
     await this.userService.save(user);
     return res.status(HttpStatus.OK).json({ message: "User registered successfully" });
@@ -40,14 +44,14 @@ export class AuthController {
   @Post("auth")
   @UseFilters(UserNotFoundExceptionFilter)
   @UseFilters(PasswordNotValidExceptionFilter)
-  async auth(@Body() authDto: AuthDto, @Res() res: Response){
+  async auth(@Body() authDto: AuthDto, @Res() res: Response) {
     const me = await this.authService.auth(
       authDto.username,
       authDto.password
     );
     const token = await this.authService.login(me)
     //res.cookie(AUTHORIZATION_HEADER, token, {httpOnly: true})
-    res.send({me, token});
+    res.send({ me, token });
   }
 
   //treba da se doradi
@@ -61,5 +65,5 @@ export class AuthController {
     );
     res.send(this.classMapper.map(user, User, MeUserInfoDto));
   }
- 
+
 }

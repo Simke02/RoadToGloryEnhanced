@@ -10,7 +10,8 @@ export const getOrmConfig = (configService: ConfigService): TypeOrmModuleOptions
     host: configService.get('DB_HOST', 'localhost'),
     database: configService.get('DB_DATABASE', 'road_to_glory'),
     synchronize: configService.get('DB_SYNCHRONIZE', 'true') === 'true',
-    entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+    entities: ['dist/**/*.entity{.ts,.js}'],
+    autoLoadEntities: true,
   };
 };
 
