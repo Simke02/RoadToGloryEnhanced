@@ -1,0 +1,53 @@
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: road_to_glory_db_dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: road_to_glory
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+    networks:
+      - road_to_glory_network
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder
+    container_name: road_to_glory_backend_dev
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: admin
+      DB_DATABASE: road_to_glory
+      DB_SYNCHRONIZE: true
+      JWT_SECRET: RFNTQXNkYXMyMWUxKmRzYWRzYQ==
+      CORS_ORIGIN: http://localhost:4200
+    volumes:
+      - ./src:/app/src
+      - ./nest-cli.json:/app/nest-cli.json
+      - ./tsconfig.json:/app/tsconfig.json
+    command: npm run start:dev
+    depends_on:
+      - postgres
+    networks:
+      - road_to_glory_network
+
+volumes:
+  postgres_data_dev:
+
+networks:
+  road_to_glory_network:
+    driver: bridge

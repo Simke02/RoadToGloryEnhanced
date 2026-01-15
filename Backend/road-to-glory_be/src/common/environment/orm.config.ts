@@ -1,14 +1,27 @@
 import { TypeOrmModuleOptions } from "@nestjs/typeorm";
-import { User } from "../models/user/user.entity";
-import { Stats } from "src/persistence/entities/stats.entity";
+import { ConfigService } from "@nestjs/config";
 
-export const config: TypeOrmModuleOptions = {
+export const getOrmConfig = (configService: ConfigService): TypeOrmModuleOptions => {
+  return {
     type: 'postgres',
-    username: 'postgres',
-    password: 'admin',
-    port: 5432,
-    host: '127.0.0.1',
-    database: 'road_to_glory',
-    synchronize: true,
-    entities: [User, Stats],
+    username: configService.get('DB_USERNAME', 'postgres'),
+    password: configService.get('DB_PASSWORD', 'admin'),
+    port: configService.get('DB_PORT', 5432),
+    host: configService.get('DB_HOST', 'localhost'),
+    database: configService.get('DB_DATABASE', 'road_to_glory'),
+    synchronize: configService.get('DB_SYNCHRONIZE', 'true') === 'true',
+    entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+  };
+};
+
+// Keep the old config for backward compatibility (non-Docker environments)
+export const config: TypeOrmModuleOptions = {
+  type: 'postgres',
+  username: 'postgres',
+  password: 'admin',
+  port: 5432,
+  host: '127.0.0.1',
+  database: 'road_to_glory',
+  synchronize: true,
+  entities: [__dirname + '/../**/*.entity{.ts,.js}'],
 };

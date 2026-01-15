@@ -13,39 +13,37 @@ import { AutomapperModule } from '@automapper/nestjs';
 import { classes } from '@automapper/classes';
 import { JwtModule } from '@nestjs/jwt';
 import configuration from './persistence/configuration/configuration';
-import { config } from './common/environment/orm.config';
+import { getOrmConfig } from './common/environment/orm.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: "src/common/environment/.env",
+      envFilePath: process.env.NODE_ENV === 'production' ? '.env' : 'src/common/environment/.env',
       load: [configuration],
     }),
-    TypeOrmModule.forRoot(/*{
-    type: 'postgres',
-    url: process.env.DATABASE_URL,
-    autoLoadEntities:true,
-    synchronize:true
-  }*/config),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: getOrmConfig,
+    }),
     AutomapperModule.forRoot({
-    strategyInitializer: classes(),
-  }),
+      strategyInitializer: classes(),
+    }),
     JwtModule.registerAsync({
-    inject: [ConfigService],
-    useFactory: (config: ConfigService) => {
-      return {
-        secret: config.get("jwtSecret"),
-      };
-    },
-    global: true,
-  }),
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => {
+        return {
+          secret: config.get("JWT_SECRET", "RFNTQXNkYXMyMWUxKmRzYWRzYQ=="),
+        };
+      },
+      global: true,
+    }),
     AuthModule,
     PersistenceModule,
     CommunicationModule,
     GameObjectModule,
     MapModule,
-  
   ],
   controllers: [AppController],
   providers: [AppService],
