@@ -71,6 +71,7 @@
             *ngFor="let cell of row; let colIndex = index"
             class="board-cell"
             [ngClass]="getTerrainClass(cell)"
+            [class.disabled]="!my_turn"
             (click)="onCellLeftClick(rowIndex, colIndex)"
             (contextmenu)="onCellRightClick(rowIndex, colIndex, $event)"
           >
@@ -78,6 +79,15 @@
               <!-- Icons will be dynamically added here -->
             </div>
           </div>
+        </div>
+      </div>
+      
+      <!-- Turn Waiting Overlay - Only covers the board, allows viewing during opponent turn -->
+      <div *ngIf="!my_turn" class="turn-waiting-overlay">
+        <div class="waiting-message">
+          <div class="spinner"></div>
+          <h2>Waiting for opponent...</h2>
+          <p>The other player is making their move</p>
         </div>
       </div>
     </div>
@@ -183,14 +193,5 @@
         (optionSelected)="handleAddUpgradesMenu($event)">
       </app-add-upgrade-menu>
     </div>
-  </div>
-</div>
-
-<!-- Turn Waiting Overlay -->
-<div *ngIf="!my_turn" class="turn-waiting-overlay">
-  <div class="waiting-message">
-    <div class="spinner"></div>
-    <h2>Waiting for opponent...</h2>
-    <p>The other player is making their move</p>
   </div>
 </div>
