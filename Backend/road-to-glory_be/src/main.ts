@@ -9,8 +9,13 @@ async function bootstrap() {
   const port = configService.get<number>('PORT', 3000);
   const corsOrigin = configService.get<string>('CORS_ORIGIN', 'http://localhost:4200');
   
+  // Parse CORS origin - handle comma-separated values
+  const allowedOrigins = corsOrigin.includes(',') 
+    ? corsOrigin.split(',').map(origin => origin.trim())
+    : corsOrigin;
+  
   app.enableCors({
-    origin: corsOrigin,
+    origin: allowedOrigins,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept, Authorization'
   });

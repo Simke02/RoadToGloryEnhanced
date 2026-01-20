@@ -372,7 +372,7 @@ export class GameComponent implements OnInit, OnDestroy {
     }
 
     this.selected_cell = {x_coor: row, y_coor: col};
-    const cell = this.el.nativeElement.querySelector(`.row:nth-child(${row + 1}) .cell:nth-child(${col + 1})`);
+    const cell = this.el.nativeElement.querySelector(`.board-row:nth-child(${row + 1}) .board-cell:nth-child(${col + 1})`);
     if (cell) {
       this.renderer.setStyle(cell, 'border-color', 'yellow');
     }
@@ -408,7 +408,7 @@ export class GameComponent implements OnInit, OnDestroy {
                         console.log(position_step);
                         this.possible_moves = position_step;
                         position_step.forEach(pos => {
-                          const cell = this.el.nativeElement.querySelector(`.row:nth-child(${pos.x_coor + 1}) .cell:nth-child(${pos.y_coor + 1})`);
+                          const cell = this.el.nativeElement.querySelector(`.board-row:nth-child(${pos.x_coor + 1}) .board-cell:nth-child(${pos.y_coor + 1})`);
                           if (cell) {
                             this.renderer.setStyle(cell, 'border-color', 'red');
                           }
@@ -736,7 +736,10 @@ export class GameComponent implements OnInit, OnDestroy {
   }
 
   displayIconAtCell(row: number, col: number, iconType: string, facing: boolean) {
-    const cell = this.el.nativeElement.querySelector(`.row:nth-child(${row + 1}) .cell:nth-child(${col + 1})`);
+    // Icons are loaded from assets folder using the path: /assets/icons/{iconType}-icon.png
+    // The iconType values are: "city", "infantry", "tank", "artillery", "r_farm", "r_mine", "p_barracks", "p_tank_plant", "p_artillery_plant"
+    // Important: CSS selectors must match the HTML template classes (.board-row and .board-cell)
+    const cell = this.el.nativeElement.querySelector(`.board-row:nth-child(${row + 1}) .board-cell:nth-child(${col + 1})`);
     if (cell) {
       const iconElement = this.renderer.createElement('img');
       this.renderer.setAttribute(iconElement, 'src', '/assets/icons/' + iconType + '-icon.png');
@@ -752,7 +755,7 @@ export class GameComponent implements OnInit, OnDestroy {
   }
 
   removeIconFromCell(row: number, col: number) {
-    const cell = this.el.nativeElement.querySelector(`.row:nth-child(${row + 1}) .cell:nth-child(${col + 1})`);
+    const cell = this.el.nativeElement.querySelector(`.board-row:nth-child(${row + 1}) .board-cell:nth-child(${col + 1})`);
     
     if (cell) {
       // Find the icon element (you can use a specific class if you've added one)
@@ -780,7 +783,7 @@ export class GameComponent implements OnInit, OnDestroy {
   removeRedBorders() {
     //3 Sklonimo crvene bordere
     this.possible_moves.forEach(move => {
-      const cell = this.el.nativeElement.querySelector(`.row:nth-child(${move.x_coor + 1}) .cell:nth-child(${move.y_coor + 1})`);
+      const cell = this.el.nativeElement.querySelector(`.board-row:nth-child(${move.x_coor + 1}) .board-cell:nth-child(${move.y_coor + 1})`);
       if (cell) {
         this.renderer.setStyle(cell, 'border-color', ''); // Reset to default color
       }
@@ -793,7 +796,7 @@ export class GameComponent implements OnInit, OnDestroy {
 
   removeYellowBorder() {
     //3 Sklonimo zuti border
-    const cell = this.el.nativeElement.querySelector(`.row:nth-child(${this.selected_cell.x_coor + 1}) .cell:nth-child(${this.selected_cell.y_coor + 1})`);
+    const cell = this.el.nativeElement.querySelector(`.board-row:nth-child(${this.selected_cell.x_coor + 1}) .board-cell:nth-child(${this.selected_cell.y_coor + 1})`);
     if (cell) {
       this.renderer.setStyle(cell, 'border-color', ''); // Reset to default color
     }

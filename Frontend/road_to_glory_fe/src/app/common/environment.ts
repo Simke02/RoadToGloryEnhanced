@@ -4,5 +4,5 @@ export const environment = {
     production: false,
     // Set this to '' when running with Docker/nginx (requests will be proxied)
     // Set this to 'http://localhost:3000' when running frontend separately with 'ng serve'
-    baseApiUrl: '' 
+    baseApiUrl: 'http://localhost:3000' 
 };
