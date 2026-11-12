@@ -280,6 +280,23 @@
 /* ===================================
    Game Board
    =================================== */
+/* The wrapper is the flex item of the game area; the actual scrolling happens
+   in .board-container. Keeping them separate lets the waiting badge be
+   positioned against the wrapper's box (which never scrolls) instead of the
+   scroll container's content, so it stays over the visible board. */
+.board-wrapper {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-start;
+  /* Needed so the wrapper keeps the height of the game area: with
+     overflow: visible a flex item's automatic min-height is the height of
+     its content, which would push the wrapper (and the badge) below the
+     visible area instead of letting .board-container scroll. */
+  overflow: hidden;
+}
+
 .board-container {
   flex: 1;
   position: relative;
@@ -799,48 +816,64 @@
 /* ===================================
    Turn Waiting Overlay
    =================================== */
+/* The board container is a scroll container, so a full-size position: absolute
+   child would scroll away with the content and only cover the top-left part of
+   the board. Instead of covering the board with a big blurred layer:
+   - the waiting badge below is anchored to the non-scrolling .board-wrapper,
+     so it stays over the visible part of the board wherever it is scrolled;
+   - the board itself gets a barely-there blur (see .game-board.not-my-turn)
+     so the opponent's moves stay readable while waiting;
+   - clicks are blocked by .board-cell.disabled, not by this badge. */
 .turn-waiting-overlay {
   position: absolute;
-  top: 0;
+  top: 32px;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(10, 14, 23, 0.5);
-  backdrop-filter: blur(3px);
+  right: 0;
   display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
-  z-index: 10;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
   pointer-events: none;
 }
 
 .waiting-message {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 20px;
+  background: rgba(10, 14, 23, 0.75);
+  border: 1px solid var(--border-color);
+  border-left: 3px solid var(--warning-color);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 10px 30px var(--shadow-strong);
   text-align: center;
   color: var(--text-primary);
 }
 
 .waiting-message h2 {
-  font-size: 2rem;
-  margin: 20px 0 10px;
-  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-size: 1rem;
+  margin: 0 0 2px;
+  font-weight: 700;
 }
 
 .waiting-message p {
   color: var(--text-secondary);
-  font-size: 1.1rem;
+  font-size: 0.8rem;
+  margin: 0;
+}
+
+.waiting-text {
+  text-align: left;
 }
 
 .spinner {
-  width: 60px;
-  height: 60px;
-  border: 4px solid var(--bg-lighter);
+  width: 26px;
+  height: 26px;
+  border: 3px solid var(--bg-lighter);
   border-top-color: var(--primary-color);
   border-radius: 50%;
   animation: spin 1s linear infinite;
-  margin: 0 auto;
+  flex-shrink: 0;
 }
 
 /* Disabled state for board cells when not player's turn */
@@ -848,4 +881,13 @@
   pointer-events: none;
   cursor: not-allowed;
   opacity: 0.8;
+}
+
+/* Barely-there blur while it is the opponent's turn: the board is only lightly
+   softened so the opponent's moves stay readable, and interaction is blocked
+   by .board-cell.disabled above. Because the blur is applied to the board
+   element itself (not to an overlay), it covers the whole board no matter how
+   far the board container is scrolled. */
+.game-board.not-my-turn {
+  filter: blur(1px);
 }
